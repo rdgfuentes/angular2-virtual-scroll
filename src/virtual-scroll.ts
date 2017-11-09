@@ -11,7 +11,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
+  Renderer,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -122,8 +122,8 @@ export class VirtualScrollComponent implements OnInit, OnChanges, OnDestroy {
   startupLoop: boolean = true;
   currentTween: any;
 
-  private disposeScrollHandler: () => void | undefined;
-  private disposeResizeHandler: () => void | undefined;
+  private disposeScrollHandler;
+  private disposeResizeHandler;
 
   /** Cache of the last scroll height to prevent setting CSS when not needed. */
   private lastScrollHeight = -1;
@@ -133,7 +133,7 @@ export class VirtualScrollComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private readonly element: ElementRef,
-    private readonly renderer: Renderer2,
+    private readonly renderer: Renderer,
     private readonly zone: NgZone) { }
 
   ngOnInit() {
@@ -180,7 +180,7 @@ export class VirtualScrollComponent implements OnInit, OnChanges, OnDestroy {
       .to({ scrollTop }, this.scrollAnimationTime)
       .easing(tween.Easing.Quadratic.Out)
       .onUpdate((data) => {
-        this.renderer.setProperty(el, 'scrollTop', data.scrollTop);
+        this.renderer.setElementProperty(el, 'scrollTop', data.scrollTop);
         this.refresh();
       })
       .start();
@@ -278,7 +278,7 @@ export class VirtualScrollComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (scrollHeight !== this.lastScrollHeight) {
-      this.renderer.setStyle(this.shimElementRef.nativeElement, 'height', `${scrollHeight}px`);
+      this.renderer.setElementStyle(this.shimElementRef.nativeElement, 'height', `${scrollHeight}px`);
       this.lastScrollHeight = scrollHeight;
     }
 
@@ -325,8 +325,8 @@ export class VirtualScrollComponent implements OnInit, OnChanges, OnDestroy {
     const topPadding = (items == null || items.length === 0) ? 0 : (d.childHeight * Math.ceil(start / d.itemsPerRow) - (d.childHeight * Math.min(start, this.bufferAmount)));
 
     if (topPadding !== this.lastTopPadding) {
-      this.renderer.setStyle(this.contentElementRef.nativeElement, 'transform', `translateY(${topPadding}px)`);
-      this.renderer.setStyle(this.contentElementRef.nativeElement, 'webkitTransform', `translateY(${topPadding}px)`);
+      this.renderer.setElementStyle(this.contentElementRef.nativeElement, 'transform', `translateY(${topPadding}px)`);
+      this.renderer.setElementStyle(this.contentElementRef.nativeElement, 'webkitTransform', `translateY(${topPadding}px)`);
       this.lastTopPadding = topPadding;
     }
 
